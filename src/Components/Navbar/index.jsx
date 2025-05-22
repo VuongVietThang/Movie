@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "./logo.png";
 import "./style.css";
 
-const Navbar = ({ setShowSearch }) => {
+const Navbar = ({ setShowSearch, watchList }) => {
   const [sticky, setSticky] = useState(false);
   const [responsive, setResponsive] = useState(false);
   const [showSide, setShowSide] = useState(false);
@@ -116,11 +116,15 @@ const Navbar = ({ setShowSearch }) => {
               </button>
             </li>
 
-            <li className="navbar-item">
-              <Link className="navbar-link" to="/Favourites">
+            <li className='navbar-item'>
+              <Link className='navbar-link favourites' to='/favourites' onClick={() => setShowSide((prev) => false)}>
                 Favourites
+                {
+                  watchList.length ? <span className='num'>{watchList.length}</span> : null
+                }
               </Link>
             </li>
+
             <button
               className="navbar-link"
               onClick={() => {

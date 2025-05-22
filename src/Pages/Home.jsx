@@ -4,7 +4,7 @@ import HomeBanner from "../Components/HomeBanner";
 import Subscribe from "../Components/Subscribe";
 import TopMovies from "../Components/TopMovies";
 
-const Home = () => {
+const Home = ({setWatchList, watchList}) => {
   const [filterCtg, setFilterCtg] = useState("Action");
   const [topMovies, setTopMovies] = useState([]);
   const location = useLocation();
@@ -41,9 +41,7 @@ const Home = () => {
       {/* Thêm id="movies" cho phần TopMovies */}
       <div id="movies">
         <TopMovies
-          filterCtg={filterCtg}
-          setFilterCtg={setFilterCtg}
-          topMovies={topMovies}
+          filterCtg={filterCtg} setFilterCtg={setFilterCtg} topMovies={topMovies} setWatchList={setWatchList} watchList={watchList}
         />
       </div>
 

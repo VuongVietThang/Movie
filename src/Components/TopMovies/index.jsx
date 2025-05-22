@@ -2,15 +2,14 @@ import React, { useState, useEffect } from "react";
 import MovieCard from "../MovieCard";
 import "./style.css";
 
-const TopMovies = () => {
-  const [filterCtg, setFilterCtg] = useState(null); // để lưu id
-
+const TopMovies = ({ watchList, setWatchList }) => {
+  const [filterCtg, setFilterCtg] = useState(null);
   const [genres, setGenres] = useState([]);
   const [topMovies, setTopMovies] = useState([]);
   const [loadingGenres, setLoadingGenres] = useState(false);
   const [loadingMovies, setLoadingMovies] = useState(true);
   const API_BASE = "http://localhost/Movie/backend/API";
-  // Fetch genres khi component mount
+
   useEffect(() => {
     setLoadingGenres(true);
     fetch(`${API_BASE}/genres.php`)
@@ -25,7 +24,6 @@ const TopMovies = () => {
       });
   }, []);
 
-  // Fetch movies khi filterCtg thay đổi
   useEffect(() => {
     setLoadingMovies(true);
     let url = `${API_BASE}/movies.php`;
@@ -44,10 +42,6 @@ const TopMovies = () => {
       });
   }, [filterCtg]);
 
-  // const handleFilterCtg = (id) => {
-  //   setFilterCtg(id);
-  // };
-
   return (
     <section className="new-sec top-rated-sec" id="movies">
       <div className="container">
@@ -62,9 +56,7 @@ const TopMovies = () => {
           ) : (
             <>
               <button
-                className={
-                  !filterCtg ? "btn category-btn active" : "btn category-btn"
-                }
+                className={!filterCtg ? "btn category-btn active" : "btn category-btn"}
                 onClick={() => setFilterCtg(null)}
               >
                 Tất cả
@@ -72,11 +64,7 @@ const TopMovies = () => {
               {genres.map((genre) => (
                 <button
                   key={genre.id}
-                  className={
-                    filterCtg === genre.id
-                      ? "btn category-btn active"
-                      : "btn category-btn"
-                  }
+                  className={filterCtg === genre.id ? "btn category-btn active" : "btn category-btn"}
                   onClick={() => setFilterCtg(genre.id)}
                 >
                   {genre.name}
@@ -91,7 +79,12 @@ const TopMovies = () => {
             <p>Loading movies...</p>
           ) : topMovies.length > 0 ? (
             topMovies.map((movie) => (
-              <MovieCard movie={movie} key={movie.imdbID || movie.id} />
+              <MovieCard
+                movie={movie}
+                key={movie.id}
+                setWatchList={setWatchList}
+                watchList={watchList}
+              />
             ))
           ) : (
             <p>No movies found.</p>

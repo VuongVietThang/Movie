@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./style.css";
+import "./admin.css";
 import { CButton } from "@coreui/react";
 import {
   CTable,
@@ -18,12 +18,7 @@ function MovieList() {
   const [selectedGenre, setSelectedGenre] = useState("");
   const navigate = useNavigate();
 
-  const API_BASE = "http://localhost/Movie-react/backend/API";
-
-  useEffect(() => {
-    fetchMovies();
-    fetchGenres();
-  }, [selectedGenre]);
+  const API_BASE = "http://localhost/Movie/backend/API";
 
   const fetchMovies = () => {
     const url = selectedGenre
@@ -43,6 +38,10 @@ function MovieList() {
       .catch((err) => console.error(err));
   };
 
+  useEffect(() => {
+    fetchMovies();
+    fetchGenres();
+  }, [fetchMovies]);
   const handleDelete = (id) => {
     if (window.confirm("Bạn chắc chắn muốn xoá?")) {
       axios
@@ -109,7 +108,6 @@ function MovieList() {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          
           {movies.map((movie) => (
             <CTableRow key={movie.id}>
               <CTableDataCell>{movie.id}</CTableDataCell>
@@ -123,7 +121,7 @@ function MovieList() {
               <CTableDataCell>
                 {movie.poster_url ? (
                   <img
-                    src={`http://localhost/Movie-react/backend/Image/${movie.poster_url}`}
+                    src={`http://localhost/Movie/backend/Image/${movie.poster_url}`}
                     alt={movie.title}
                     width="150"
                   />
@@ -137,7 +135,7 @@ function MovieList() {
                   variant="outline"
                   onClick={() => navigate(`/admin/edit/${movie.id}`)}
                 >
-                  Update
+                  Edit
                 </CButton>
                 <CButton
                   onClick={() => handleDelete(movie.id)}
@@ -147,7 +145,6 @@ function MovieList() {
                   Delete
                 </CButton>
               </CTableDataCell>
-              
             </CTableRow>
           ))}
         </CTableBody>

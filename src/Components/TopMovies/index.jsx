@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import MovieCard from '../MovieCard';
-import './style.css';
+import React, { useState, useEffect } from "react";
+import MovieCard from "../MovieCard";
+import "./style.css";
 
 const TopMovies = () => {
-  const [filterCtg, setFilterCtg] = useState('');
+  const [filterCtg, setFilterCtg] = useState(null); // để lưu id
+
   const [genres, setGenres] = useState([]);
   const [topMovies, setTopMovies] = useState([]);
-  const [loadingGenres, setLoadingGenres] = useState(true);
+  const [loadingGenres, setLoadingGenres] = useState(false);
   const [loadingMovies, setLoadingMovies] = useState(true);
-  const API_BASE = "http://localhost/Movie-react/backend/API";
+  const API_BASE = "http://localhost/Movie/backend/API";
   // Fetch genres khi component mount
   useEffect(() => {
     setLoadingGenres(true);
@@ -43,9 +44,9 @@ const TopMovies = () => {
       });
   }, [filterCtg]);
 
-  const handleFilterCtg = (e) => {
-    setFilterCtg(e.target.textContent);
-  };
+  // const handleFilterCtg = (id) => {
+  //   setFilterCtg(id);
+  // };
 
   return (
     <section className="new-sec top-rated-sec" id="movies">
@@ -59,19 +60,29 @@ const TopMovies = () => {
           {loadingGenres ? (
             <p>Loading genres...</p>
           ) : (
-            genres.map((genre) => (
+            <>
               <button
-                key={genre.id}
                 className={
-                  filterCtg === genre.name
-                    ? 'btn category-btn active'
-                    : 'btn category-btn'
+                  !filterCtg ? "btn category-btn active" : "btn category-btn"
                 }
-                onClick={handleFilterCtg}
+                onClick={() => setFilterCtg(null)}
               >
-                {genre.name}
+                Tất cả
               </button>
-            ))
+              {genres.map((genre) => (
+                <button
+                  key={genre.id}
+                  className={
+                    filterCtg === genre.id
+                      ? "btn category-btn active"
+                      : "btn category-btn"
+                  }
+                  onClick={() => setFilterCtg(genre.id)}
+                >
+                  {genre.name}
+                </button>
+              ))}
+            </>
           )}
         </div>
 

@@ -37,6 +37,11 @@ tbody tr td{
   left: 20px;
   border-radius: 5px;
 }
-* {
-  padding-bottom: 10px !important;
+
+.button{
+  position: absolute;
+  top: 80px;
+  right: 50px;
 }
+
+

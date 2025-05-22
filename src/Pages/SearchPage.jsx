@@ -13,28 +13,33 @@ const SearchPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-    fetch(
-      `https://omdbapi.com/?apikey=7b85d604&s=${query}&page=${currentPage}`,
-      {
-        signal: signal,
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setTotalPages(Math.round(data.totalResults / 10));
-        setSearchResults(
-          data.Search
-            ? data.Search.filter((movie) => movie.Poster !== 'N/A').slice(0, 8)
-            : []
-        );
-      });
+  const controller = new AbortController();
+  
+  fetch(`http://localhost/Movie/backend/API/search.php?query=${query}&page=${currentPage}`)
 
-    return () => {
-      controller.abort();
-    };
-  }, [query, currentPage]);
+    .then((res) => res.json())
+    .then((data) => {
+  console.log('Dữ liệu trả về:', data);
+  if (Array.isArray(data)) {
+    // Backend trả thẳng mảng phim
+    setTotalPages(1);
+    setSearchResults(data);
+  } else {
+    // Backend trả object có cấu trúc {total_pages, movies}
+    setTotalPages(data.total_pages || 1);
+    setSearchResults(data.movies || []);
+  }
+})
+
+    .catch((err) => {
+      if (err.name !== 'AbortError') {
+        console.error('Lỗi tìm kiếm:', err);
+      }
+    });
+
+  return () => controller.abort();
+}, [query, currentPage]);
+
 
   return (
     <>
@@ -48,7 +53,7 @@ const SearchPage = () => {
           <div className='row movies-grid'>
             {searchResults.length ? (
               searchResults.map((movie) => (
-                <MovieCard movie={movie} key={movie.imdbID} />
+                <MovieCard movie={movie} key={movie.id} />
               ))
             ) : (
               <NoData />

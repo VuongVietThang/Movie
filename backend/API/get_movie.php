@@ -1,6 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json");
+header("Content-Type: application/json; charset=UTF-8");
+
 require(__DIR__ . '/../Model/db.php');
 
 if (!isset($_GET['id'])) {
@@ -11,7 +12,7 @@ if (!isset($_GET['id'])) {
 $movie_id = intval($_GET['id']);
 
 // Lấy thông tin phim
-$query = "SELECT * FROM movies WHERE id = ?";
+$query = "SELECT id, title, author, description, release_date, poster_url FROM movies WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $movie_id);
 $stmt->execute();
@@ -24,7 +25,7 @@ if ($result->num_rows === 0) {
 
 $movie = $result->fetch_assoc();
 
-// Lấy danh sách ID thể loại của phim này
+// Lấy danh sách ID thể loại của phim
 $genre_query = "SELECT genre_id FROM movie_genres WHERE movie_id = ?";
 $stmt = $conn->prepare($genre_query);
 $stmt->bind_param("i", $movie_id);
@@ -33,11 +34,11 @@ $genre_result = $stmt->get_result();
 
 $genres_id = [];
 while ($row = $genre_result->fetch_assoc()) {
-    $genres_id[] = $row['genre_id'];
+    $genres_id[] = (int)$row['genre_id']; // đảm bảo là số nguyên
 }
 
-// Gộp vào kết quả trả về
+// Thêm vào kết quả
 $movie['genres_id'] = $genres_id;
 
-echo json_encode($movie);
+echo json_encode($movie, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 ?>

@@ -10,7 +10,8 @@ $genreFilter = isset($_GET['genre']) ? (int)$_GET['genre'] : 0;
 $sql = "SELECT 
           m.id AS movie_id, m.title, m.release_date,
           m.author, m.description, m.poster_url,
-          g.id AS genre_id, g.name AS genre_name
+          GROUP_CONCAT(g.id) AS genre_ids,
+          GROUP_CONCAT(g.name) AS genre_names
         FROM movies m
         LEFT JOIN movie_genres mg ON m.id = mg.movie_id
         LEFT JOIN genres g ON mg.genre_id = g.id";
@@ -19,12 +20,14 @@ $params = [];
 $types = "";
 
 if ($genreFilter > 0) {
-    $sql .= " WHERE g.id = ?";
+    $sql .= " WHERE m.id IN (
+      SELECT movie_id FROM movie_genres WHERE genre_id = ?
+    )";
     $params[] = $genreFilter;
     $types .= "i";
 }
 
-$sql .= " ORDER BY m.id";
+$sql .= " GROUP BY m.id ORDER BY m.id";
 
 if (!empty($params)) {
     $stmt = $conn->prepare($sql);
@@ -38,27 +41,25 @@ if (!empty($params)) {
 $movies = [];
 
 while ($row = $result->fetch_assoc()) {
-    $id = $row['movie_id'];
-
-    if (!isset($movies[$id])) {
-        $movies[$id] = [
-            'id' => $id,
-            'title' => $row['title'],
-            'author' => $row['author'],
-            'description' => $row['description'],
-            'release_date' => $row['release_date'],
-            'poster_url' => $row['poster_url'],
-            'genres' => []
-        ];
+    $genres = [];
+    if ($row['genre_ids']) {
+        $ids = explode(',', $row['genre_ids']);
+        $names = explode(',', $row['genre_names']);
+        foreach ($ids as $k => $id) {
+            $genres[] = ['id' => (int)$id, 'name' => $names[$k]];
+        }
     }
 
-    if ($row['genre_id']) {
-        $movies[$id]['genres'][] = [
-            'id' => $row['genre_id'],
-            'name' => $row['genre_name']
-        ];
-    }
+    $movies[] = [
+        'id' => $row['movie_id'],
+        'title' => $row['title'],
+        'author' => $row['author'],
+        'description' => $row['description'],
+        'release_date' => $row['release_date'],
+        'poster_url' => $row['poster_url'],
+        'genres' => $genres,
+    ];
 }
 
 header('Content-Type: application/json');
-echo json_encode(array_values($movies));
+echo json_encode($movies);

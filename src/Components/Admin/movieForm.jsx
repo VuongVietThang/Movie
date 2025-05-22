@@ -1,25 +1,56 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./style.css";
+
+import 'primereact/resources/themes/lara-light-indigo/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+
+import "./admin.css";
 import { CFormInput, CFormTextarea } from "@coreui/react";
 import { MultiSelect } from "primereact/multiselect";
-import "primereact/resources/themes/lara-light-cyan/theme.css";
+
+
 
 function MovieForm() {
+
+  useEffect(() => {
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css";
+  document.head.appendChild(link);
+
+  return () => {
+    document.head.removeChild(link);
+  };
+}, []);
+
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
-  const [genres, setGenres] = useState([]); // Lưu danh sách thể loại từ backend
-  const [selectedGenres, setSelectedGenres] = useState([]); // Lưu các thể loại được chọn
+  const [genres, setGenres] = useState([]); // Danh sách thể loại từ backend
+  const [selectedGenres, setSelectedGenres] = useState([]); // Danh sách object thể loại
   const [description, setDescription] = useState("");
   const [releaseDate, setReleaseDate] = useState("");
-  const [video, setVideo] = useState(null); // Trạng thái lưu video
+  const [video, setVideo] = useState(null);
   const [poster, setPoster] = useState(null);
+  const [movieGenresId, setMovieGenresId] = useState([]); // Mảng id để xử lý edit
+
+  
+
+  const style = {
+    section: {
+      padding: "10px 0px"
+    }
+  };
+
   const { id } = useParams();
   const navigate = useNavigate();
-  const API_BASE = "http://localhost/Movie-react/backend/API";
+  const API_BASE = "http://localhost/Movie/backend/API";
+  
+ 
 
-  // Load genres từ backend (API)
+
+  // Lấy danh sách thể loại
   useEffect(() => {
     axios
       .get(`${API_BASE}/genres.php`)
@@ -27,7 +58,7 @@ function MovieForm() {
       .catch((err) => console.error("Lỗi khi lấy danh sách thể loại:", err));
   }, []);
 
-  // Nếu có id thì load thông tin phim
+  // Lấy thông tin phim nếu có id (edit)
   useEffect(() => {
     if (id) {
       axios
@@ -39,13 +70,22 @@ function MovieForm() {
           setDescription(movie.description);
           setReleaseDate(movie.release_date);
           setPoster(movie.poster_url);
-          setSelectedGenres(movie.genres_id); // genres_id sẽ là mảng
+          setMovieGenresId(movie.genres_id); // Mảng ID
         })
         .catch((err) => console.error("Lỗi khi lấy thông tin phim:", err));
     }
   }, [id]);
 
-  // Hàm xử lý gửi dữ liệu lên backend
+  // Ghép genres_id và genres để tạo selectedGenres (ép kiểu id để tránh sai .includes)
+  useEffect(() => {
+    if (genres.length > 0 && movieGenresId.length > 0) {
+      const matchedGenres = genres.filter((genre) =>
+        movieGenresId.includes(Number(genre.id))
+      );
+      setSelectedGenres(matchedGenres);
+    }
+  }, [genres, movieGenresId]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -59,15 +99,9 @@ function MovieForm() {
       formData.append("category[]", genre.id);
     });
 
-    // Nếu có video, append vào FormData
-    if (video) {
-      formData.append("video", video);
-    }
-    if (poster) {
-      formData.append("poster", poster);
-    }
+    if (video) formData.append("video", video);
+    if (poster) formData.append("poster", poster);
 
-    // Tạo request tùy thuộc vào việc có id hay không (thêm hay cập nhật)
     const request = id
       ? axios.post(`${API_BASE}/update_movie.php?id=${id}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
@@ -81,61 +115,32 @@ function MovieForm() {
       .catch((err) => console.error("Lỗi khi gửi dữ liệu:", err));
   };
 
-  // Hàm xử lý thay đổi thể loại
-  // const handleGenreChange = (e) => {
-  //   const selectedOptions = Array.from(
-  //     e.target.selectedOptions,
-  //     (option) => option.value
-  //   );
-  //   setSelectedGenres(selectedOptions);
-  // };
-
-  //   const handleGenreChange = (e) => {
-  //   setSelectedGenres(e.value);
-  // };
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-5">
-      <div>
+      <div style={style.section}>
         <label className="block font-medium">Movie Title</label>
         <CFormInput
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           type="text"
           placeholder="Movie Title"
-          aria-label="default input example"
           required
         />
       </div>
 
-      <div>
+      <div style={style.section}>
         <label className="block font-medium">Author</label>
         <CFormInput
           value={author}
           onChange={(e) => setAuthor(e.target.value)}
           type="text"
           placeholder="Author"
-          aria-label="default input example"
           required
         />
       </div>
 
-      <div>
+      <div style={style.section}>
         <label className="block font-medium">Genres</label>
-        {/* <select
-          multiple
-          value={selectedGenres}
-          onChange={handleGenreChange}
-          className="border w-full px-2 py-1"
-          required
-        >
-          {genres.map((genre) => (
-            <option key={genre.id} value={genre.id}>
-              {genre.name}
-            </option>
-          ))}
-        </select> */}
-
         <MultiSelect
           value={selectedGenres}
           onChange={(e) => setSelectedGenres(e.value)}
@@ -144,30 +149,28 @@ function MovieForm() {
           display="chip"
           placeholder="Select Genres"
           maxSelectedLabels={3}
-          className="w-full md:w-20rem"
-          required
+          className="w-full"
+          style={{
+            width: "100%",
+            height: "40px",
+            display: "flex",
+            alignItems: "center",
+          }}
         />
       </div>
 
-      <div>
+      <div style={style.section}>
         <label className="block font-medium">Description</label>
-        {/* <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="border w-full px-2 py-1"
-          rows={4}
-        ></textarea> */}
         <CFormTextarea
           className="mb-3"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Description"
-          aria-label="Disabled textarea example"
           required
-        ></CFormTextarea>
+        />
       </div>
 
-      <div>
+      <div style={style.section}>
         <label className="block font-medium">Ngày xuất bản</label>
         <input
           type="date"
@@ -178,35 +181,28 @@ function MovieForm() {
         />
       </div>
 
-      <div>
+      <div style={style.section}>
         <label className="block font-medium">Tải ảnh poster</label>
         <input
           type="file"
           onChange={(e) => setPoster(e.target.files[0])}
           className="border w-full px-2 py-1"
-          required
+          required={!id}
         />
-
-        {id && typeof poster === "string" && (
-          <p className="text-sm text-gray-600 mt-1">
-            Poster hiện tại: <span className="italic">{poster}</span>
-          </p>
-        )}
       </div>
 
-      {/* Input file để tải video */}
-      <div>
+      <div style={style.section}>
         <label className="block font-medium">Tải video lên</label>
         <input
           type="file"
           onChange={(e) => setVideo(e.target.files[0])}
           className="border w-full px-2 py-1"
-          required
+          required={!id}
         />
       </div>
 
       <button
-        className="bg-green-500 text-white px-4 py-2 rounded"
+        className="bg-green-500 text-white px-4 py-2 button rounded"
         type="submit"
       >
         {id ? "Cập nhật" : "Thêm"}

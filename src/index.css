@@ -83,3 +83,10 @@ button, .btn, a, .link {
 .results-sec .section-title .title{
   text-transform: capitalize;
 }
+h1{
+  text-align: center;
+  margin-top: 2%;
+}
+label {
+  padding-right: 20px;
+}

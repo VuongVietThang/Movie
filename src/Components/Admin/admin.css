@@ -1,4 +1,4 @@
-@import url('https://cdn.jsdelivr.net/npm/@coreui/coreui@5.3.1/dist/css/themes/bootstrap/bootstrap.min.css');
+/* @import url('https://cdn.jsdelivr.net/npm/@coreui/coreui@5.3.1/dist/css/themes/bootstrap/bootstrap.min.css'); */
 .table-admin{
   
   background-color: #161b22;
@@ -37,6 +37,11 @@ tbody tr td{
   left: 20px;
   border-radius: 5px;
 }
-* {
-  padding-bottom: 10px !important;
+
+.button{
+  position: absolute;
+  top: 80px;
+  right: 50px;
 }
+
+

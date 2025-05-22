@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import "./admin.css";
 import { CButton } from "@coreui/react";
 import {
@@ -13,6 +14,18 @@ import {
 import axios from "axios";
 
 function MovieList() {
+
+useEffect(() => {
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css";
+  document.head.appendChild(link);
+
+  return () => {
+    document.head.removeChild(link);
+  };
+}, []);
+
   const [movies, setMovies] = useState([]);
   const [genres, setGenres] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState("");
@@ -37,6 +50,8 @@ function MovieList() {
       .then((res) => setGenres(res.data))
       .catch((err) => console.error(err));
   };
+
+ 
 
   useEffect(() => {
     fetchMovies();

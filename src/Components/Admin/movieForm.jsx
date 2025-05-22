@@ -10,7 +10,21 @@ import "./admin.css";
 import { CFormInput, CFormTextarea } from "@coreui/react";
 import { MultiSelect } from "primereact/multiselect";
 
+
+
 function MovieForm() {
+
+  useEffect(() => {
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css";
+  document.head.appendChild(link);
+
+  return () => {
+    document.head.removeChild(link);
+  };
+}, []);
+
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [genres, setGenres] = useState([]); // Danh sách thể loại từ backend
@@ -21,6 +35,8 @@ function MovieForm() {
   const [poster, setPoster] = useState(null);
   const [movieGenresId, setMovieGenresId] = useState([]); // Mảng id để xử lý edit
 
+  
+
   const style = {
     section: {
       padding: "10px 0px"
@@ -30,6 +46,9 @@ function MovieForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const API_BASE = "http://localhost/Movie/backend/API";
+  
+ 
+
 
   // Lấy danh sách thể loại
   useEffect(() => {

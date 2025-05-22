@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"; // Thêm useEffect
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
 import Footer from "./Components/Footer";
 import Navbar from "./Components/Navbar";
 import Home from "./Pages/Home";
@@ -9,6 +9,13 @@ import SingleMovie from "./Pages/SingleMovie";
 import Search from "./Components/Search";
 import Favourites from "./Pages/Favourites";
 import AdminLayout from "./Pages/Admin";
+import VideoPlayer from "./Components/VideoPlayer";
+
+function VideoPlayerWrapper() {
+  const { videoUrl } = useParams();
+  const decodedVideoUrl = decodeURIComponent(videoUrl);
+  return <VideoPlayer videoUrl={decodedVideoUrl} />;
+}
 
 function App() {
   const [showSearch, setShowSearch] = useState(false);
@@ -67,6 +74,7 @@ function App() {
                     />
                   }
                 />
+                <Route path="/video-player/:videoUrl" element={<VideoPlayerWrapper />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <Footer />

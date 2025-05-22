@@ -18,7 +18,7 @@ const MovieCard = ({ movie, watchList, setWatchList }) => {
       ? movie.genres.map((g) => g.name).join(", ")
       : "Movie";
 
-  const watchListIds = watchList.map((item) => item.id);
+  const watchListIds = Array.isArray(watchList) ? watchList.map((item) => item.id) : [];
 
   const addToFavourite = (movie) => {
     if (watchListIds.includes(movie.id)) {

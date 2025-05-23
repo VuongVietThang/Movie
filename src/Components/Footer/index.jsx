@@ -9,7 +9,7 @@ const Footer = () => {
       <footer className='page-footer'>
         <div className='container'>
           <div className='footer-top'>
-            <img src={logo} alt='Movflx' />
+            <img src={logo} alt='Movie' className="logo"/>
           </div>
           <div className='footer-bottom'>
             <div className='row'>
@@ -78,7 +78,7 @@ const Footer = () => {
                 href='https://github.com/GSG-G11/Movflx'
                 target='_blank'
                 rel='noreferrer'>
-                Movflx
+                Movie
               </a>
             </p>
           </div>

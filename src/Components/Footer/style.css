@@ -1,5 +1,7 @@
 /* Footer Design */
-
+.footer-top .logo{
+  max-width: 150px;
+}
 .page-footer {
   background: url('./footer.jpg');
   background-position: center;

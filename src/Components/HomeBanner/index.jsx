@@ -7,7 +7,7 @@ const HomeBanner = () => {
     <header className="page-header home-header">
       <div className="container">
         <div className="banner-content">
-          <h4 className="sub-title">Movflx</h4>
+          <h4 className="sub-title">Great Movie</h4>
           <h2 className="title">Unlimited {<span>Movie</span>} , TVs Shows, & More.</h2>
           <Link className="btn" to='/#Movies'>
           <i className="ri-arrow-right-line"></i>

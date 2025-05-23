@@ -43,19 +43,19 @@ const MovieCard = ({ movie, watchList, setWatchList }) => {
           {watchListIds.includes(movie.id) ? (
             <li>
               <button className="btn watch-btn" onClick={() => deleteFromWatchList(movie.id)}>
-                Xóa khỏi yêu thích
+                Remove from Favourites
               </button>
             </li>
           ) : (
             <li>
               <button className="btn watch-btn" onClick={() => addToFavourite(movie)}>
-                Yêu thích
+                Favourite
               </button>
             </li>
           )}
           <li>
             <Link className="btn details-btn" to={`/movie/${movieId}`}>
-              Chi tiết
+              Details
             </Link>
           </li>
         </ul>

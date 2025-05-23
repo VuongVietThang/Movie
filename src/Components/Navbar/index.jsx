@@ -63,7 +63,7 @@ const Navbar = ({ setShowSearch, watchList }) => {
         <div className="row">
           <div className="navbar-brand">
             <Link className="navbar-item link" to="/">
-              <img src={logo} alt="Movflx" className="logo" />
+              <img src={logo} alt="Movie" className="logo" />
             </Link>
           </div>
           <ul
